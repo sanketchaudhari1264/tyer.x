@@ -2,17 +2,18 @@ const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
 
-
 const app = express();
-app.use(cors());
 
+app.use(cors());
 app.use(express.json());
-const PORT = 5000;
+
+const PORT = process.env.PORT || 5000;
+
 mongoose.connect("mongodb+srv://tyrexuser:Tyrex%4012345@cluster0.kfdws64.mongodb.net/tyrexdb?appName=Cluster0")
   .then(() => console.log("MongoDB connected successfully ✅"))
   .catch((err) => console.error("MongoDB connection error ❌", err));
 
-  const EnquirySchema = new mongoose.Schema({
+const EnquirySchema = new mongoose.Schema({
   name: String,
   phone: String,
   message: String,
@@ -20,11 +21,10 @@ mongoose.connect("mongodb+srv://tyrexuser:Tyrex%4012345@cluster0.kfdws64.mongodb
 
 const Enquiry = mongoose.model("Enquiry", EnquirySchema);
 
-
-
 app.get("/", (req, res) => {
   res.send("TyerX Backend is running 🚀");
 });
+
 app.post("/api/enquiry", async (req, res) => {
   try {
     const { name, phone, message } = req.body;
@@ -41,19 +41,21 @@ app.post("/api/enquiry", async (req, res) => {
       success: true,
       message: "Enquiry saved to database successfully ✅",
     });
+
   } catch (error) {
     console.error("Error saving enquiry ❌", error);
+
     res.status(500).json({
       success: false,
-      message: "Server error, try again later",
+      message: "Server error",
     });
   }
 });
-// Simple admin login (hardcoded for now)
+
 app.post("/api/admin/login", (req, res) => {
+
   const { email, password } = req.body;
 
-  // Change these to your own
   const adminEmail = "admin@tyrex.com";
   const adminPassword = "123456";
 
@@ -62,20 +64,27 @@ app.post("/api/admin/login", (req, res) => {
   } else {
     res.json({ success: false });
   }
-});
 
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 app.get("/api/enquiries", async (req, res) => {
+
   try {
+
     const enquiries = await Enquiry.find().sort({ _id: -1 });
+
     res.json(enquiries);
+
   } catch (error) {
+
     console.error("Error fetching enquiries ❌", error);
+
     res.status(500).json({ message: "Server error" });
+
   }
+
 });
 
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

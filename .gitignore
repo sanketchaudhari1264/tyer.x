@@ -28,7 +28,6 @@ build
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
@@ -46,3 +45,6 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
+=======
+.vscode/
+>>>>>>> 3879c70 (Fix Railway deployment configuration - Add nixpacks.toml, railway.json, Procfile, and .gitignore)

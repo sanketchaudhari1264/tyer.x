@@ -12,7 +12,7 @@ function Login() {
     
     // Add your login API call here
     try {
-      const res = await fetch("http://localhost:5000/api/login", {
+      const res = await fetch("https://tyerx-production.up.railway.app/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

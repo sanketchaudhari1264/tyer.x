@@ -21,6 +21,16 @@ const EnquirySchema = new mongoose.Schema({
 
 const Enquiry = mongoose.model("Enquiry", EnquirySchema);
 
+const UserSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  phone: String,
+  password: String,
+  createdAt: { type: Date, default: Date.now }
+});
+
+const User = mongoose.model("User", UserSchema);
+
 app.get("/", (req, res) => {
   res.send("TyerX Backend is running 🚀");
 });
@@ -44,6 +54,75 @@ app.post("/api/enquiry", async (req, res) => {
 
   } catch (error) {
     console.error("Error saving enquiry ❌", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+app.post("/api/signup", async (req, res) => {
+  try {
+    const { name, email, phone, password } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.json({
+        success: false,
+        message: "Email already registered",
+      });
+    }
+
+    const newUser = new User({
+      name,
+      email,
+      phone,
+      password, // Note: In production, you should hash the password
+    });
+
+    await newUser.save();
+
+    res.json({
+      success: true,
+      message: "Account created successfully ✅",
+    });
+
+  } catch (error) {
+    console.error("Error creating account ❌", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email, password });
+
+    if (user) {
+      res.json({
+        success: true,
+        user: {
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+        },
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Invalid email or password",
+      });
+    }
+
+  } catch (error) {
+    console.error("Error logging in ❌", error);
 
     res.status(500).json({
       success: false,
